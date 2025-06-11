@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: false }" :class="{ 'dark': darkMode }" class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WiFi Voucher Portal{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="flex flex-col min-h-screen font-sans antialiased">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">Captive Portal</h1>
+            <button @click="darkMode = !darkMode" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700">
+                Toggle Theme
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-6">
+        {% block content %}
+        <!-- Page-specific content goes here -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-800 text-center py-4">
+        <p class="text-sm">© {{ year|default:2025 }} Captive Portal. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

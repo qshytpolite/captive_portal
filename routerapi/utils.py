@@ -1,26 +1,35 @@
-# routerapi/utils.py
-
-def allow_device(mac_address, ip_address):
-    """
-    Placeholder function to simulate allowing a device on the router.
-    This would typically interact with the router to allow internet access
-    for a specific MAC/IP.
-    """
-    print(f"[RouterAPI] Allowing device: {mac_address} ({ip_address})")
-    return True
+# router/utils.py
+from routerapi.models import RouterConfig
+from portal.models import CaptiveSession
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 
-def block_device(mac_address, ip_address):
+def verify_ip_mac(business, ip, mac):
     """
-    Placeholder function to simulate blocking a device on the router.
+    Verify if the IP and MAC address belong to an active session for the business.
     """
-    print(f"[RouterAPI] Blocking device: {mac_address} ({ip_address})")
-    return True
+    return CaptiveSession.objects.filter(
+        business=business,
+        ip_address=ip,
+        mac_address=mac,
+        is_active=True
+    ).exists()
 
 
-def is_device_allowed(mac_address):
+def get_router_config(business):
     """
-    Placeholder to check if a device is currently allowed.
+    Fetch router configuration for the given business.
     """
-    print(f"[RouterAPI] Checking device allowance for: {mac_address}")
-    return True  # Always returns allowed for now
+    try:
+        return RouterConfig.objects.get(business=business)
+    except ObjectDoesNotExist:
+        return None
+
+
+def forward_session_to_router(session):
+    """
+    Stub function to forward session/login to router. To be implemented.
+    """
+    # TODO: Integrate router API
+    pass

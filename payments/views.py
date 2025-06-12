@@ -1,7 +1,23 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from .models import PaymentTransaction
+from .models import PaymentTransaction, WebhookLog
 from business.models import Business
+import json
+
+# simplified webhook handler
+
+
+@csrf_exempt
+def payment_webhook(request):
+    if request.method == "POST":
+        payload = json.loads(request.body)
+        WebhookLog.objects.create(
+            business_id=payload.get("business_id"),
+            event=payload.get("event", "unknown"),
+            payload=payload
+        )
+        return JsonResponse({"status": "received"})
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 @csrf_exempt

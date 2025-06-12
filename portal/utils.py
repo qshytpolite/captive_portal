@@ -1,31 +1,40 @@
-from django.shortcuts import render
-from .models import CaptiveSession
-from voucher.models import VoucherUsage, Voucher
-from voucher.utils import is_voucher_valid
-
 # portal/utils.py
+from portal.models import CaptiveSession
+from voucher.models import Voucher, VoucherUsage
+from voucher.utils import is_voucher_valid, record_voucher_usage
+from django.utils import timezone
+from accounts.models import User
 
 
-def start_captive_session(voucher_code, mac_address, ip_address, user_agent):
-    is_valid, message = is_voucher_valid(voucher_code, mac_address)
-    if not is_valid:
-        return None, message
+def auto_login_user(ip, mac):
+    """
+    Automatically login the user if the IP/MAC match an active valid voucher session.
+    """
+    try:
+        session = CaptiveSession.objects.get(
+            ip_address=ip,
+            mac_address=mac,
+            is_active=True
+        )
+        return session.user if session.user else None
+    except CaptiveSession.DoesNotExist:
+        return None
 
-    voucher = Voucher.objects.get(code=voucher_code)
 
-    # Register session and usage if not already bound
-    usage, created = VoucherUsage.objects.get_or_create(
-        voucher=voucher,
-        defaults={'mac_address': mac_address}
-    )
-
+def create_captive_session(user, ip, mac, voucher):
+    """
+    Creates and tracks a new captive session.
+    """
     session = CaptiveSession.objects.create(
-        mac_address=mac_address,
-        ip_address=ip_address,
-        user_agent=user_agent,
-        voucher_used=voucher,
-        is_authenticated=True
+        user=user,
+        voucher=voucher,
+        ip_address=ip,
+        mac_address=mac,
+        start_time=timezone.now(),
+        is_active=True,
+        business=voucher.business
     )
-    usage.session = session
-    usage.save()
-    return session, "Access granted"
+
+    # Record voucher usage for tracking
+    record_voucher_usage(voucher, mac_address=mac, user=user, session=session)
+    return session

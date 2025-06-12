@@ -6,11 +6,12 @@ from .forms import RouterConfigForm
 @admin.register(RouterConfig)
 class RouterConfigAdmin(admin.ModelAdmin):
     form = RouterConfigForm
-    list_display = ('business', 'router_ip', 'router_type',
+    list_display = ('business', 'ip_address', 'router_type',
                     'api_port', 'username', 'is_active')
     list_filter = ('is_active',)
-    search_fields = ('business__name', 'router_ip')
+    search_fields = ('business__name', 'ip_address')
     autocomplete_fields = ['business']
+    readonly_fields = ('created_at', 'updated_at')
 
     class Meta:
         verbose_name = "Router Configuration"

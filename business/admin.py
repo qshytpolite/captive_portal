@@ -8,6 +8,8 @@ from .models import (
 )
 from voucher.services import create_vouchers
 from .forms import BusinessMemberForm
+from routerapi.models import RouterConfig
+from voucher.models import Voucher
 
 # Step 1: Define the form used in the admin action
 
@@ -17,9 +19,25 @@ class VoucherGenerationForm(forms.Form):
     prefix = forms.CharField(max_length=20, initial="HOTSPOT")
     duration_minutes = forms.IntegerField(min_value=5, initial=60)
 
+# edit RouterConfig in admin
+
+
+class RouterConfigInline(admin.StackedInline):
+    model = RouterConfig
+    extra = 0
+
+
+class VoucherInline(admin.TabularInline):  # or StackedInline if more fields
+    model = Voucher
+    extra = 0
+    readonly_fields = ('code', 'created_at', 'expires_at')
+    can_delete = False
+    show_change_link = True
+
 
 @admin.register(Business)
 class BusinessAdmin(admin.ModelAdmin):
+    inlines = [RouterConfigInline, VoucherInline]
     list_display = ('name', 'owner', 'is_active', 'created_at')
     search_fields = ('name', 'owner__username')
     list_filter = ('is_active', 'created_at')

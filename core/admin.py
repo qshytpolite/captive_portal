@@ -7,3 +7,4 @@ class SettingsAdmin(admin.ModelAdmin):
     list_display = ('key', 'value', 'updated_at')
     readonly_fields = ('updated_at',)
     search_fields = ('key', 'value')
+    ordering = ('key',)

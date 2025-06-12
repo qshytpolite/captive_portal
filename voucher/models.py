@@ -8,7 +8,8 @@ class Voucher(models.Model):
     code = models.CharField(max_length=50, unique=True)
     business = models.ForeignKey(
         Business, on_delete=models.CASCADE, related_name='vouchers')
-    duration_minutes = models.PositiveIntegerField(default=60)
+    duration_minutes = models.PositiveIntegerField(
+        default=60, help_text="1 day = 1440 minutes")
     usage_limit = models.PositiveIntegerField(default=1)
     usage_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -22,6 +23,11 @@ class Voucher(models.Model):
         related_name='created_vouchers'
     )
 
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Voucher"
+        verbose_name_plural = "Vouchers"
+
     def __str__(self):
         return f"{self.code} ({'active' if self.is_active else 'inactive'})"
 
@@ -33,7 +39,8 @@ class Voucher(models.Model):
 
 
 class VoucherUsage(models.Model):
-    voucher = models.ForeignKey('Voucher', on_delete=models.CASCADE)
+    voucher = models.OneToOneField(
+        'Voucher', on_delete=models.CASCADE)  # changed from ForeignKey
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              null=True, blank=True, on_delete=models.SET_NULL)
     used_at = models.DateTimeField(auto_now_add=True)
@@ -42,13 +49,13 @@ class VoucherUsage(models.Model):
         'portal.CaptiveSession', null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
-        unique_together = ('voucher', 'mac_address')
         ordering = ['-used_at']
         verbose_name = "Voucher Usage"
         verbose_name_plural = "Voucher Usages"
 
     def __str__(self):
         return f"{self.voucher.code} used by {self.mac_address or 'unknown'}"
+
 
 # Voucher generation logs
 

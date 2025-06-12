@@ -9,17 +9,17 @@ class RouterConfigForm(forms.ModelForm):
         fields = '__all__'
 
     def clean_ip_address(self):
-        router_ip = self.cleaned_data.get("ip_address")
+        ip_address = self.cleaned_data.get("ip_address")
         try:
-            ip_address(router_ip)  # validate IPv4/IPv6 format
+            ip_address(ip_address)  # validate IPv4/IPv6 format
         except ValueError:
             raise forms.ValidationError("Enter a valid IP address.")
-        return router_ip
+        return ip_address
 
     def clean(self):
         cleaned_data = super().clean()
         router_type = cleaned_data.get("router_type")
-        router_ip = cleaned_data.get("ip_address")
+        ip_address = cleaned_data.get("ip_address")
         username = cleaned_data.get("username")
         password = cleaned_data.get("password")
 
@@ -29,7 +29,7 @@ class RouterConfigForm(forms.ModelForm):
                 raise forms.ValidationError(
                     "Username and password are required for MikroTik routers.")
 
-        if not router_ip:
+        if not ip_address:
             raise forms.ValidationError("Router IP address is required.")
 
         return cleaned_data

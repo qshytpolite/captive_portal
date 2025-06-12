@@ -15,6 +15,9 @@ class Business(models.Model):
     voucher_quota = models.PositiveIntegerField(
         default=100)  # max active vouchers
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 

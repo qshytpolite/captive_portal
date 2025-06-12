@@ -4,7 +4,7 @@ from .models import CaptiveSession
 
 @admin.register(CaptiveSession)
 class CaptiveSessionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'mac_address', 'start_time',
+    list_display = ('user', 'ip_address', 'mac_address', 'start_time',
                     'end_time', 'is_authenticated')
     list_filter = ('is_authenticated', 'start_time')
     search_fields = ('mac_address', 'user__username')

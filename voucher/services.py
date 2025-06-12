@@ -1,6 +1,7 @@
 from datetime import timedelta
 from django.utils import timezone
 from .models import Voucher, VoucherGenerationLog
+from business.utils import check_subscription_limits
 import secrets
 import string
 from django.core.exceptions import ValidationError
@@ -20,6 +21,11 @@ def create_vouchers(
     created_by=None,
     prefix="HOTSPOT"
 ):
+
+    is_allowed, msg = check_subscription_limits(business)
+    if not is_allowed:
+        raise ValueError(msg)
+
     """
     Generates `count` vouchers for the given business, enforcing active quota.
     """

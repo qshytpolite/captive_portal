@@ -7,6 +7,7 @@ class TimeStampedModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        get_latest_by = 'created_at'
         abstract = True
 
 
@@ -18,5 +19,6 @@ class Settings(TimeStampedModel):
         return f"{self.key}: {self.value[:30]}..."
 
     class Meta:
+        ordering = ['key']
         verbose_name = "Setting"
         verbose_name_plural = "Settings"

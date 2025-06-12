@@ -1,50 +1,45 @@
 # utils.py
 from .models import Voucher, VoucherUsage
-from portal.models import CaptiveSession
 from django.utils import timezone
-from django.db.models import Count
+from django.core.exceptions import ValidationError
 
 
-def is_voucher_valid(voucher_code, mac_address):
+def is_voucher_valid(voucher_code, mac_address=None):
     """
-    Validate whether a voucher is usable for the given MAC address.
-    Returns (is_valid: bool, reason: str).
+    Check if a voucher is still valid for use (strict one-use enforcement).
+    Optionally binds to a MAC address for audit/compatibility.
+    Returns: (bool, reason)
     """
     try:
         voucher = Voucher.objects.get(code=voucher_code, is_active=True)
     except Voucher.DoesNotExist:
-        return False, "Invalid or inactive voucher"
+        return False, "Voucher does not exist or is inactive"
 
-    # Expiry check
     if voucher.expires_at and timezone.now() > voucher.expires_at:
-        return False, "Voucher expired"
+        return False, "Voucher has expired"
 
-    # Usage limit check (if such a field is added later)
-    if hasattr(voucher, 'usage_limit') and hasattr(voucher, 'usage_count'):
-        if voucher.usage_limit and voucher.usage_count >= voucher.usage_limit:
-            return False, "Voucher usage limit reached"
+    if VoucherUsage.objects.filter(voucher=voucher).exists():
+        return False, "Voucher already used"
 
-    # MAC address uniqueness check
-    existing_use = VoucherUsage.objects.filter(
-        voucher=voucher, mac_address=mac_address).first()
+    # allow re-use by same MAC during edge cases (e.g., lost connection)
+    existing_use = VoucherUsage.objects.filter(voucher=voucher).first()
     if existing_use:
-        return True, "Voucher reused by same device"
-
-    other_device_use = VoucherUsage.objects.filter(
-        voucher=voucher).exclude(mac_address=mac_address).exists()
-    if other_device_use:
-        return False, "Voucher already used on a different device"
+        if mac_address and existing_use.mac_address == mac_address:
+            return True, "Voucher reconnected from same device"
+        return False, "Voucher already used"
 
     return True, "Voucher is valid"
 
 
-def record_voucher_usage(voucher, mac_address, user=None, session=None):
+def record_voucher_usage(voucher, session, user=None, mac_address=None):
     """
-    Safely create a VoucherUsage record and optionally link to a CaptiveSession.
-    Raises ValueError if session is missing and enforcement is required.
+    Create a VoucherUsage record if the voucher hasn't been used yet.
+    Raises ValidationError if the voucher has already been used.
     """
-    if not session:
-        raise ValueError("Session must be provided to track voucher usage.")
+
+    # Ensure voucher has not already been used
+    if hasattr(voucher, 'usage'):
+        raise ValidationError("This voucher has already been used.")
 
     usage = VoucherUsage.objects.create(
         voucher=voucher,
@@ -53,9 +48,5 @@ def record_voucher_usage(voucher, mac_address, user=None, session=None):
         session_duration=session
     )
 
-    if hasattr(voucher, 'usage_count'):
-        voucher.usage_count = VoucherUsage.objects.filter(
-            voucher=voucher).count()
-        voucher.save(update_fields=['usage_count'])
-
+    # Optionally update stats or logs (usage_count, audit, etc.)
     return usage

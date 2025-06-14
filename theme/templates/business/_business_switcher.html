@@ -1,0 +1,15 @@
+{% if request.user.is_authenticated and request.user.businesses.all %}
+<div class="business-switcher">
+  <form action="{% url 'select_business' %}" method="post">
+    {% csrf_token %}
+    <select name="business_id" onchange="this.form.submit()">
+      {% for b in request.user.businesses.all %}
+        <option value="{{ b.id }}"
+          {% if b.id == request.session.current_business_id|default:''|add:''|int %}selected{% endif %}>
+          {{ b.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+{% endif %}

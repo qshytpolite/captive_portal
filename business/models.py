@@ -9,6 +9,14 @@ class Business(models.Model):
         related_name='businesses'
     )
     name = models.CharField(max_length=255, unique=True)
+    logo = models.ImageField(
+        upload_to='business_logos',
+        blank=True,
+        null=True
+    )
+    business_email = models.EmailField(default=None, null=True, blank=True)
+    business_phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

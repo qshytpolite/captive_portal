@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Generated Vouchers</h1>
+<ul>
+  {% for v in vouchers %}
+  <li>{{ v.code }} - Expires: {{ v.expires_at|date:'Y-m-d' }}</li>
+  {% endfor %}
+</ul>
+<a href="{% url 'business:voucher_list' %}">Back to list</a>
+{% endblock %}

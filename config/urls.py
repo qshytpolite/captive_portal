@@ -28,7 +28,8 @@ urlpatterns = [
     # path('', include('core.urls')),
 
     # Business
-    path('api/business/', include('business.urls')),
+    path('business/', include('business.urls')),
+    # path('business/', include(('business.urls', 'business'))),
 
     # Portal
     path('', include('portal.urls')),

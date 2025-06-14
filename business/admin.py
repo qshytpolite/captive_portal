@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin, messages
 from .models import (
     Business,
@@ -7,17 +6,10 @@ from .models import (
     BusinessSubscription
 )
 from voucher.services import create_vouchers
-from .forms import BusinessMemberForm
+from .forms import BusinessMemberForm, VoucherGenerationForm
 from routerapi.models import RouterConfig
 from voucher.models import Voucher
 
-# Step 1: Define the form used in the admin action
-
-
-class VoucherGenerationForm(forms.Form):
-    count = forms.IntegerField(min_value=1, max_value=500, initial=10)
-    prefix = forms.CharField(max_length=20, initial="HOTSPOT")
-    duration_minutes = forms.IntegerField(min_value=5, initial=60)
 
 # edit RouterConfig in admin
 

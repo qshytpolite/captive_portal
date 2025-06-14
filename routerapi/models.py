@@ -16,6 +16,7 @@ class RouterConfig(models.Model):
         max_length=100, null=True, choices=ROUTER_TYPES)
     api_port = models.PositiveIntegerField(
         default=8728)  # MikroTik API default port
+    api_key = models.CharField(max_length=255, blank=True, null=True)
     username = models.CharField(max_length=100)
     # Store encrypted in production!
     password = models.CharField(max_length=100)

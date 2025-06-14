@@ -1,0 +1,10 @@
+<h2>Select Business</h2>
+<form method="post">
+  {% csrf_token %}
+  <select name="business_id">
+    {% for b in businesses %}
+      <option value="{{ b.id }}">{{ b.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Select</button>
+</form>

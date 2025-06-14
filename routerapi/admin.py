@@ -7,7 +7,7 @@ from .forms import RouterConfigForm
 class RouterConfigAdmin(admin.ModelAdmin):
     form = RouterConfigForm
     list_display = ('business', 'ip_address', 'router_type',
-                    'api_port', 'username', 'is_active')
+                    'api_port', 'api_key', 'username', 'is_active')
     list_filter = ('is_active',)
     search_fields = ('business__name', 'ip_address')
     autocomplete_fields = ['business']

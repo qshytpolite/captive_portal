@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>My Vouchers</h1>
+<table>
+  <thead><tr><th>Code</th><th>Status</th><th>Expires At</th></tr></thead>
+  <tbody>
+    {% for v in vouchers %}
+    <tr>
+      <td>{{ v.code }}</td>
+      <td>{{ v.is_active|yesno:'Active,Inactive' }}</td>
+      <td>{{ v.expires_at|date:'Y-m-d' }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">No vouchers</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

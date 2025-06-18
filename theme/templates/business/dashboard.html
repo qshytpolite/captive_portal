@@ -1,5 +1,5 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'business/base_biz.html' %}
+{% block business_content %}
 <h1>Dashboard</h1>
 <ul class="stats">
   <li>Total Vouchers: {{ total_vouchers }}</li>
@@ -7,8 +7,8 @@
   <li>Expired Vouchers: {{ expired_vouchers }}</li>
   <li>Total Sessions: {{ total_sessions }}</li>
 </ul>
-<a href="{% url 'business:voucher_list' %}">Manage Vouchers</a>
+<!-- <a href="{% url 'business:voucher_list' %}">Manage Vouchers</a>
 <a href="{% url 'business:generate_vouchers' %}">Generate Vouchers</a>
 <a href="{% url 'business:edit_profile' %}">Edit Profile</a>
-<a href="{% url 'business:usage_stats' %}">Usage Stats</a>
+<a href="{% url 'business:usage_stats' %}">Usage Stats</a> -->
 {% endblock %}

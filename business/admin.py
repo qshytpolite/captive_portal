@@ -9,9 +9,16 @@ from voucher.services import create_vouchers
 from .forms import BusinessMemberForm, VoucherGenerationForm
 from routerapi.models import RouterConfig
 from voucher.models import Voucher
+from portal.models import CaptiveSession
 
 
-# edit RouterConfig in admin
+class CaptiveSessionInline(admin.TabularInline):
+    model = CaptiveSession
+    fields = ('voucher_used', 'user', 'ip_address',
+              'mac_address', 'start_time', 'is_active')
+    readonly_fields = fields
+    extra = 0
+    can_delete = False
 
 
 class RouterConfigInline(admin.StackedInline):
@@ -29,7 +36,7 @@ class VoucherInline(admin.TabularInline):  # or StackedInline if more fields
 
 @admin.register(Business)
 class BusinessAdmin(admin.ModelAdmin):
-    inlines = [RouterConfigInline, VoucherInline]
+    inlines = [RouterConfigInline, VoucherInline, CaptiveSessionInline]
     list_display = ('name', 'owner', 'is_active', 'created_at')
     search_fields = ('name', 'owner__username')
     list_filter = ('is_active', 'created_at')

@@ -1,8 +1,12 @@
+# portal/models.py
 from django.db import models
 from django.conf import settings
+from business.models import Business
 
 
 class CaptiveSession(models.Model):
+    business = models.ForeignKey(
+        Business, on_delete=models.CASCADE, related_name='sessions')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              null=True, blank=True, on_delete=models.SET_NULL)
     mac_address = models.CharField(max_length=17)
@@ -13,6 +17,7 @@ class CaptiveSession(models.Model):
     is_authenticated = models.BooleanField(default=False)
     voucher_used = models.ForeignKey(
         'voucher.Voucher', null=True, blank=True, on_delete=models.SET_NULL)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['-start_time']

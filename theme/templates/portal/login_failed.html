@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Voucher Error ❌</h2>
+    <p>The voucher is invalid, expired, or already in use.</p>
+    <a href="{% url 'voucher_login' %}">Try Again</a>
+{% endblock %}

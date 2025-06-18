@@ -32,7 +32,9 @@ class Voucher(models.Model):
         return f"{self.code} ({'active' if self.is_active else 'inactive'})"
 
     def is_expired(self):
-        return self.expires_at and timezone.now() > self.expires_at
+        if self.expires_at:
+            return timezone.now() > self.expires_at
+        return False
 
     def has_remaining_uses(self):
         return self.usage_count < self.usage_limit

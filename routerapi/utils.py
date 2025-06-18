@@ -1,4 +1,4 @@
-# router/utils.py
+# routerapi/utils.py
 from routerapi.models import RouterConfig
 from portal.models import CaptiveSession
 from django.core.exceptions import ObjectDoesNotExist
@@ -29,7 +29,23 @@ def get_router_config(business):
 
 def forward_session_to_router(session):
     """
-    Stub function to forward session/login to router. To be implemented.
+    Simulate forwarding session info to the router.
+    Replace this with actual RouterOS API integration when ready.
     """
-    # TODO: Integrate router API
-    pass
+
+    config = get_router_config(session.business)
+    if not config:
+        return False  # No router config available
+
+    # Simulated payload
+    payload = {
+        "ip": session.ip_address,
+        "mac": session.mac_address,
+        "voucher": session.voucher.code,
+        "user": session.user.username if session.user else "anonymous",
+        "start_time": session.start_time.isoformat(),
+    }
+
+    # Simulated response
+    print(f"[Router Stub] Forwarding session to router: {payload}")
+    return True  # Simulated success
